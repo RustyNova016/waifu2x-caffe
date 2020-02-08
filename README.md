@@ -1,499 +1,499 @@
 waifu2x-caffe (for Windows)
 ----------
 
- 制作者 : lltcggie
+ Author: lltcggie
 
-本ソフトは、画像変換ソフトウェア「[waifu2x](https://github.com/nagadomi/waifu2x)」の変換機能のみを、
-[Caffe](http://caffe.berkeleyvision.org/)を用いて書き直し、Windows向けにビルドしたソフトです。
-CPUで変換することも出来ますが、CUDA(あるいはcuDNN)を使うとCPUより高速に変換することが出来ます。
+This software uses only the conversion function of the image conversion software "[waifu2x] (https://github.com/nagadomi/waifu2x)"
+This software was rewritten using [Caffe] (http://caffe.berkeleyvision.org/) and built for Windows.
+You can convert with CPU, but you can use CUDA (or cuDNN) to convert faster than CPU.
 
 GUI supports English, Japanese, Simplified Chinese, Traditional Chinese, Korean, Turkish, Spanish, Russian, and French.
 
-ソフトのダウンロードは[こちらのreleasesページ](https://github.com/lltcggie/waifu2x-caffe/releases)の「Downloads」の項で出来ます。
+You can download the software from the "Downloads" section of [this release page] (https://github.com/lltcggie/waifu2x-caffe/releases).
 
 
- 要求環境
+ Required environment
 ----------
 
-このソフトを動作させるには最低でも以下の環境が必要です。
+The following environment is required to operate this software.
 
- * OS : Windows Vista以降 64bit (32bit用exeはありません)
- * メモリ : 空きメモリ1GB以上 (ただし、変換する画像サイズによる)
- * GPU : Compute Capability 3.0 以上のNVIDIA製GPU(CPUで変換する場合は不要)
- * Microsoft Visual C++ 2015 再頒布可能パッケージ Update 3(x64版)がインストールされていること(必須)
-    - 上記パッケージは[こちら](https://www.microsoft.com/ja-jp/download/details.aspx?id=53587)
-    - `ダウンロード` ボタンを押した後、`vcredist_x64.exe`を選択し、ダウンロード・インストールを行って下さい。
-    - 見つからない場合は、「Visual C++ 2015 再頒布可能パッケージ Update 3」で検索してみて下さい。
+ * OS: Windows Vista or later 64bit (There is no exe for 32bit)
+ * Memory: 1 GB or more of free memory (depending on the image size to be converted)
+ * GPU: NVIDIA GPU with Compute Capability 3.0 or higher (not required when converting with CPU)
+ * Microsoft Visual C ++ 2015 Redistributable Package Update 3 (x64 version) must be installed (required)
+    -The above package is [here] (https://www.microsoft.com/ja-jp/download/details.aspx?id=53587)
+    -After pressing the `Download` button, select` vcredist_x64.exe` and download and install.
+    -If you cannot find it, try searching for "Visual C ++ 2015 Redistributable Package Update 3".
 
-cuDNNで変換する場合はさらに
+When converting with cuDNN,
 
- * GPU : Compute Capability 3.0 以上のNVIDIA製GPU
+ * GPU: NVIDIA GPU with Compute Capability 3.0 or higher
 
-自分のGPUのCompute Capabilityが知りたい場合は[こちらのページ](https://developer.nvidia.com/cuda-gpus)で調べて下さい。
+If you want to know the Compute Capability of your GPU, please check [this page] (https://developer.nvidia.com/cuda-gpus).
 
 
- cuDNNについて
+ About cuDNN
 --------
 
-cuDNNはNVIDIA製GPUでのみつかえる高速な機械学習向けのライブラリです。
-cuDNNを使わなくてもCUDAで変換出来ますが、cuDNNを使うと以下のような利点があります。
+cuDNN is a library for high-speed machine learning that can only be used with NVIDIA GPUs.
+You can convert with CUDA without using cuDNN, but using cuDNN has the following advantages.
 
- * 使用するGPUの種類によっては画像をより高速に変換することが出来る
- * VRAMの使用量を減らすことが出来る(最低でもCUDAの半分未満。分割サイズが大きくなるほど差が開いていく)
+ * Images can be converted faster depending on the type of GPU used
+ * VRAM usage can be reduced (at least less than half of CUDA. The difference increases as the partition size increases)
 
-このような利点があるcuDNNですが、ライセンスの関係上動作に必要なファイルを配布することが出来ません。  
-なので、cuDNNを使いたい人は[こちらのページ](https://developer.nvidia.com/cuDNN)でWindows向けバイナリ(v5.1 RC以降)をダウンロードし、
-「cudnn64_7.dll」をwaifu2x-caffeのフォルダに入れて下さい。  
-なお、ソフトを起動している最中にdllを入れた場合はソフトを起動しなおしてください。  
-(cuDNNをダウンロードするにはNVIDIA Developerへの登録とCUDA Registered Developersへの登録が必要です。
- CUDA Registered Developersはおそらく(簡単な)審査があるっぽいので登録してもすぐにcuDNNをダウンロード出来るわけではありません。)
+Although cuDNN has such advantages, the files required for operation cannot be distributed due to the license.
+So, if you want to use cuDNN, download the binary for Windows (v5.1 RC or later) from [this page] (https://developer.nvidia.com/cuDNN),
+Please put "cudnn64_7.dll" in the waifu2x-caffe folder.
+In addition, if you put the dll while running the software, please restart the software.
+(To download cuDNN, you need to register with NVIDIA Developer and CUDA Registered Developers.
+ CUDA Registered Developers probably have a (simple) review, so registering doesn't mean you can download cuDNN right away. )
 
-作者の環境での処理速度、VRAM使用量の計測結果は以下の通りです。
+The measurement results of processing speed and VRAM usage in the author's environment are as follows.
 
- * GPU : GTX 980 Ti
- * VRAM : 6GB
- * 処理内容 : 1000*1000のPNG 4ch画像でノイズ除去と拡大、JPEGノイズ除去レベル1、拡大率2.00、TTAモード未使用
- * 処理時間計測方法 : CUI版で10回の平均処理時間を計測。ただし初めに2回事前に処理を行う(初期化にかかる時間を含めないようにするため)
- * VRAM使用量計算方法 : (GUI版で処理中に使用した最大VRAM) - (GUI版を起動した後のVRAM使用量)
+ * GPU: GTX 980 Ti
+ * VRAM: 6GB
+ * Processing: Noise removal and enlargement with 1000 * 1000 PNG 4ch image, JPEG noise removal level 1, enlargement ratio 2.00, TTA mode not used
+ * Processing time measurement method: Measure the average processing time of 10 times with CUI version. However, first perform the process twice in advance (to avoid including the time required for initialization)
+ * VRAM usage calculation method: (Maximum VRAM used during processing in GUI version)-(VRAM usage after starting GUI version)
 
-cuDNN RGBモデル
+cuDNN RGB model
 
-| 分割サイズ |   処理時間   |   VRAM使用量(MB)   |
-|:-----------|:-------------|:-------------------|
-| 100        | 00:00:03.170 | 278                |
-| 125        | 00:00:02.745 | 279                |
-| 200        | 00:00:02.253 | 365                |
-| 250        | 00:00:02.147 | 446                |
-| 500        | 00:00:01.982 | 1110               |
+| Partition size | Processing time | VRAM usage (MB) |
+|: ----------- |: ------------- |: ------------------- |
+| 100 | 00: 00: 03.170 | 278 |
+| 125 | 00: 00: 02.745 | 279 |
+| 200 | 00: 00: 02.253 | 365 |
+| 250 | 00: 00: 02.147 | 446 |
+| 500 | 00: 00: 01.982 | 1110 |
 
-CUDA RGBモデル
+CUDA RGB model
 
-| 分割サイズ |   処理時間   |   VRAM使用量(MB)   |
-|:-----------|:-------------|:-------------------|
-| 100        | 00:00:06.192 | 724                |
-| 125        | 00:00:05.504 | 724                |
-| 200        | 00:00:04.642 | 1556               |
-| 250        | 00:00:04.436 | 2345               |
-| 500        | 計測不能     | 計測不能(6144以上) |
+| Partition size | Processing time | VRAM usage (MB) |
+|: ----------- |: ------------- |: ------------------- |
+| 100 | 00: 00: 06.192 | 724 |
+| 125 | 00: 00: 05.504 | 724 |
+| 200 | 00: 00: 04.642 | 1556 |
+| 250 | 00: 00: 04.436 | 2345 |
+500 | Measurement not possible | Measurement not possible (6144 or more) |
 
-cuDNN UpRGBモデル
+cuDNN UpRGB model
 
-| 分割サイズ |   処理時間   |   VRAM使用量(MB)   |
-|:-----------|:-------------|:-------------------|
-| 100        | 00:00:02.831 | 328                |
-| 125        | 00:00:02.573 | 329                |
-| 200        | 00:00:02.261 | 461                |
-| 250        | 00:00:02.150 | 578                |
-| 500        | 00:00:01.991 | 1554               |
+| Partition size | Processing time | VRAM usage (MB) |
+|: ----------- |: ------------- |: ------------------- |
+| 100 | 00: 00: 02.831 | 328 |
+| 125 | 00: 00: 02.573 | 329 |
+| 200 | 00: 00: 02.261 | 461 |
+| 250 | 00: 00: 02.150 | 578 |
+| 500 | 00: 00: 01.991 | 1554 |
 
-CUDA UpRGBモデル
+CUDA UpRGB model
 
-| 分割サイズ |   処理時間   |   VRAM使用量(MB)   |
-|:-----------|:-------------|:-------------------|
-| 100        | 00:00:03.669 | 788                |
-| 125        | 00:00:03.382 | 787                |
-| 200        | 00:00:02.965 | 1596               |
-| 250        | 00:00:02.852 | 2345               |
-| 500        | 計測不能     | 計測不能(6144以上) |
+| Partition size | Processing time | VRAM usage (MB) |
+|: ----------- |: ------------- |: ------------------- |
+| 100 | 00: 00: 03.669 | 788 |
+| 125 | 00: 00: 03.382 | 787 |
+| 200 | 00: 00: 02.965 | 1596 |
+| 250 | 00: 00: 02.852 | 2345 |
+500 | Measurement not possible | Measurement not possible (6144 or more) |
 
 
- 使い方(GUI版)
+ How to use (GUI version)
 --------
 
-「waifu2x-caffe.exe」はGUIソフトです。ダブルクリックで起動します。
-またはエクスプローラで「waifu2x-caffe.exe」にファイルやフォルダをドラッグ&ドロップで放り込むと、前回起動時の設定で変換を行います。
-その場合、設定によっては変換に成功したら自動でダイアログが閉じられます。
-また、GUIでもコマンドラインによるオプション設定を行うことが出来ます。
-詳しくはコマンドラインオプション(共通)とコマンドラインオプション(GUI版)の項をお読みください。
+"Waifu2x-caffe.exe" is GUI software. Start by double clicking.
+Alternatively, if you drag and drop a file or folder into “waifu2x-caffe.exe” using Explorer, the file will be converted using the settings from the previous startup.
+In that case, depending on the settings, the dialog is automatically closed when the conversion is successful.
+You can also set options on the command line using the GUI.
+For details, please read the section on command line options (common) and command line options (GUI version).
 
-起動後、「入力パス」欄に画像かフォルダをドラッグ&ドロップで放り込むと「出力パス」欄が自動で設定されます。
-出力先を変えたい場合は「出力パス」欄を変更して下さい。
+After startup, drag and drop an image or folder into the "Input path" field and the "Output path" field will be set automatically.
+If you want to change the output destination, change the "Output path" field.
 
-好みに合わせて変換設定を変更することが出来ます。
-
-
-## 入出力設定
-     ファイルの入出力に関する設定項目群です。
-
-### 「入力パス」
-     変換したいファイルのパスを指定します。
-     フォルダを指定した場合は、サブフォルダ内も含めた「フォルダ内の変換する拡張子」が付くファイルを変換対象とします。
-     複数のファイル、フォルダをドラッグで指定することが出来ます。
-     その場合は新しいフォルダの中にファイル、フォルダ構造を維持したまま出力されます。
-    （入力パス欄には「(Multi Files)」と表示されます。出力フォルダ名はマウスで掴んでいたファイル、フォルダ名から生成されます）
-     参照ボタンを押してファイルを選択する場合、単体のファイル、フォルダか、複数のファイルが選択できます。
-
-### 「出力パス」
-     変換後の画像を保存するパスを指定します。
-    「入力パス」で フォルダを指定した場合は、指定したフォルダの中に変換したファイルを(フォルダ構造をそのままで)保存します。指定したフォルダがない場合は自動で作成します。
-
-### 「フォルダ内の変換する拡張子」
-     「入力パス」がフォルダの場合の、フォルダ内の変換する画像の拡張子を指定します。
-     デフォルト値は`png:jpg:jpeg:tif:tiff:bmp:tga`です。
-     また、区切り文字は`:`です。
-     大文字小文字は区別しません。
-     例. png:jpg:jpeg:tif:tiff:bmp:tga
-
-### 「出力拡張子」
-     変換後の画像の形式を指定します。
-    「出力画質設定」と「出力深度ビット数」に設定できる値はここで指定する形式により異なります。
-
-### 「出力画質設定」
-     変換後の画像の画質を指定します。
-     設定できる値は整数です。
-     指定できる値の範囲と意味は「出力拡張子」で設定した形式により異なります。
-
-      * .jpg : 値の範囲(0～100) 数字が高いほど高画質
-      * .webp : 値の範囲(1～100) 数字が高いほど高画質 100だと可逆圧縮
-      * .tga : 値の範囲(0～1) 0なら圧縮なし、1ならRLE圧縮
-
-### 「出力深度ビット数」
-     変換後の画像の1チャンネルあたりのビット数を指定します。
-     指定できる値は「出力拡張子」で設定した形式により異なります。
-
-## 変換画質・処理設定
-     ファイル変換の処理方法、画質に関する設定項目群です。
-
-### 「変換モード」
-     変換モードを指定します。
-      * ノイズ除去と拡大 : ノイズ除去と拡大を行います 
-      * 拡大 : 拡大を行います
-      * ノイズ除去 : ノイズ除去を行います
-      * ノイズ除去(自動判別)と拡大 : 拡大を行います。入力がJPEG画像の場合のみノイズ除去も行います
-
-### 「JPEGノイズ除去レベル」
-    ノイズ除去レベルを指定します。レベルの高いほうがより強力にノイズを除去しますが、のっぺりとした絵になる可能性もあります。
-
-### 「拡大サイズ」
-    拡大後のサイズの設定を行います。
-      * 拡大率で指定 : 画像を指定の拡大率で拡大します
-      * 変換後の横幅で指定 : 画像の縦横比を維持したまま、指定された横幅になるように拡大します(単位はピクセル)
-      * 変換後の縦幅で指定 : 画像の縦横比を維持したまま、指定された縦幅になるように拡大します(単位はピクセル)
-      * 変換後の縦横幅で指定 : 指定された縦横幅になるように拡大します。「1920x1080」のように指定します(単位はピクセル)
-    2倍を超える拡大率の場合、(ノイズを除去する場合は最初の1回だけ行い)指定された拡大率を超えるまで2倍ずつ拡大し、2の累乗倍でない拡大率の場合は最後に縮小するという処理を行います。そのため変換結果がのっぺりとした絵になる可能性があります。
-
-### 「モデル」
-    使用するモデルを指定します。
-    変換対象の画像によって最適なモデルは異なるので、様々なモデルを試してみることをおすすめします。
-      * 2次元イラスト(RGBモデル) : 画像のRGBすべてを変換する2次元イラスト用モデル
-      * 写真・アニメ(Photoモデル) : 写真・アニメ用のモデル
-      * 2次元イラスト(UpRGBモデル) : 2次元イラスト(RGBモデル)より高速かつ同等以上の画質で変換するモデル。ただしRGBモデルより消費するメモリ(VRAM)の量が多いので、変換中に強制終了する場合は分割サイズを調節すること
-      * 写真・アニメ(UpPhotoモデル) : 写真・アニメ(Photoモデル)より高速かつ同等以上の画質で変換するモデル。ただしPhotoモデルより消費するメモリ(VRAM)の量が多いので、変換中に強制終了する場合は分割サイズを調節すること
-      * 2次元イラスト(Yモデル) : 画像の輝度のみを変換する2次元イラスト用モデル
-      * 2次元イラスト(UpResNet10モデル) : 2次元イラスト(UpRGBモデル)より高画質で変換するモデル。このモデルは分割サイズが違うと出力結果が変わるので注意すること
-      * 2次元イラスト(CUnetモデル) : 2次元イラストを同梱のモデルで一番高画質で変換できるモデル。このモデルは分割サイズが違うと出力結果が変わるので注意すること
-
-### 「TTAモードを使う」
-    TTA(Test-Time Augmentation)モードを使うかどうかを指定します。
-    TTAモードを使うと変換が8倍遅くなる代わりに、PSNR(画像の評価指数の一つ)が0.15くらい上がるそうです。
-
-## 処理速度設定
-     画像変換の処理速度に影響する設定項目群です。
-
-### 「分割サイズ」
-    内部で分割して処理を行う際の幅（ピクセル単位）を指定します。
-    最適な(処理が最速で終わる)数値の決め方は「分割サイズ」の項で説明します。
-    「-------」で区切られている上の方は入力された画像の縦横サイズの約数、
-    下の方は「crop_size_list.txt」から読み出した汎用的な分割サイズです。
-    分割サイズが大きすぎる場合、要求されるメモリの量(GPUを使う場合はVRAMの量)がPCで使用できるメモリを超えてソフトが強制終了するので気をつけてください。
-    処理速度にそれなりに影響するので、同じ画像サイズの画像をフォルダ指定で大量に変換するときは、最適な分割サイズを調べてから変換することをおすすめします。
-    ただし、モデルによっては分割サイズを変更すると出力結果が変わるものがあるので気を付けてください。
-    (その場合は分割サイズはデフォルトを使用し、バッチサイズを調整することで処理速度を上げることができます)
-
-### 「バッチサイズ」
-    内部でまとめて処理を行う際のサイズを指定します。
-    バッチサイズを大きくすると処理速度が速くなることがあります。
-    分割サイズと同様に要求されるメモリの量がPCで使用できるメモリを超えないように気を付けてください。
-
-## 動作設定
-     あまり変更する機会がないと思われる動作設定をまとめた設定群です。
-
-### 「ファイル入力時自動変換開始設定」
-     参照ボタンやドラッグアンドドロップで入力ファイルを指定した際に自動で変換を開始するのか設定を行います。
-     exeに入力ファイルを引数で与えた場合ではこの項目の設定内容は影響しません。
-      * 自動で開始しない : ファイルを入力しても自動で変換を開始しません
-      * ファイルを1つでも入力したら開始 : ファイルを1つでも入力したら自動で変換を開始します
-      * フォルダあるいは複数ファイルを入力したら開始 : フォルダ、複数ファイルを入力したら自動で変換を開始します。単体の画像ファイルを変換するのは変換設定の調節を行うときだけだ、という時にどうぞ
-
-### 「使用プロセッサー」
-    変換を行うプロセッサーを指定します。
-      * CUDA(使えたらcuDNN) : CUDA(GPU)を使って変換を行います(cuDNNが使える場合はcuDNNが使われます)
-      * CPU : CPUのみを使って変換を行います
-
-### 「出力ファイルを上書きしない」
-     この設定がONの場合、画像の書き込み先に同名のファイルが存在する場合は変換を行いません。
-
-### 「引数付き起動時設定」
-     exeに入力ファイルを引数で与えた場合での動作を設定します。
-      * 起動時に変換する : 起動時に自動で変換を開始します
-      * 成功時に終了する : 変換終了時に失敗していなければ自動で終了します
-
-### 「使用GPU No」
-     GPUが複数枚ある場合に使用するデバイス番号を指定できます。CPUモード時や無効なデバイス番号を指定した場合は無視されます。
-
-### 「入力参照時固定フォルダ」
-     入力の参照ボタンを押した際に最初に表示されるフォルダをここで設定したフォルダに固定します。
-
-### 「出力参照時固定フォルダ」
-     変換した画像の出力先フォルダをここで設定したフォルダに固定します。
-     また、出力の参照ボタンを押した際に最初に表示されるフォルダをここで設定したフォルダに固定します。
-
-## その他
-     その他の設定項目群です。
-
-### 「UIの言語」
-    UIの言語を設定します。
-    初回起動時はPCの言語設定と同じ言語が選ばれます。(存在しない場合は英語になります)
-
-### 「cuDNNチェック」
-    「cuDNNチェック」ボタンを押すとcuDNNが使えるか調べることが出来ます。
-    cuDNNが使えない場合は理由が表示されます。
-
-「実行」ボタンを押すと変換が始まります。
-途中でキャンセルしたい場合は「キャンセル」ボタンを押します。
-ただし、実際に停止するまでタイムラグがあります。
-プログレスバーは複数枚の画像を変更した際の進行度合いを示しています。
-ログに残り予想時間が表示されますが、これは同じ縦幅、横幅の複数ファイルを処理したときの予想です。
-なので、ファイルの大きさがバラバラな場合は役に立ちませんし、処理する画像が2枚以下の時は「不明」としか表示されません。
+You can change the conversion settings to your liking.
 
 
- 使い方(CUI版)
+## Input / output setting
+     Setting items related to file input / output.
+
+### "Input path"
+     Specify the path of the file you want to convert.
+     If a folder is specified, files with "extension to convert in folder", including those in subfolders, will be converted.
+     You can specify multiple files and folders by dragging.
+     In that case, the file and the folder structure will be output in the new folder.
+    ("(Multi Files)" is displayed in the input path field. The output folder name is generated from the file and folder name that was grasped with the mouse.)
+     When selecting a file by pressing the browse button, you can select a single file, folder, or multiple files.
+
+### "Output path"
+     Specify the path to save the converted image.
+    If you specify a folder in "Input path", save the converted file (with the folder structure as it is) in the specified folder. If the specified folder does not exist, it will be created automatically.
+
+### "Extension to be converted in folder"
+     If "input path" is a folder, specify the extension of the image to be converted in the folder.
+     The default value is `png: jpg: jpeg: tif: tiff: bmp: tga`.
+     The delimiter is `:`.
+     Case is not significant.
+     Example.png: jpg: jpeg: tif: tiff: bmp: tga
+
+### "Output extension"
+     Specify the format of the converted image.
+    The values ​​that can be set for “Output Quality Setting” and “Output Depth Bits” differ depending on the format specified here.
+
+### “Output quality setting”
+     Specify the image quality of the converted image.
+     Possible values ​​are integers.
+     The range and meaning of the specifiable values ​​depend on the format set in "Output extension".
+
+      * .jpg: Value range (0-100) The higher the number, the higher the image quality
+      * .webp: Value range (1 to 100) Higher number means higher quality 100, lossless compression
+      * .tga: Value range (0 to 1) 0 means no compression, 1 means RLE compression
+
+### "Output Depth Bits"
+     Specify the number of bits per channel of the converted image.
+     The value that can be specified depends on the format set in “Output extension”.
+
+## Conversion image quality / processing settings
+     Setting items related to file conversion processing method and image quality.
+
+### "Conversion mode"
+     Specify the conversion mode.
+      * Noise reduction and enlargement: Performs noise reduction and enlargement
+      * Magnify: Enlarge
+      * Noise Removal: Performs noise removal
+      * Noise reduction (automatic detection) and enlargement: Enlarge. Performs noise reduction only when the input is a JPEG image
+
+### "JPEG noise removal level"
+    Specify the noise reduction level. Higher levels remove more noise, but may result in a more subtle picture.
+
+### "Enlarged size"
+    Set the size after enlargement.
+      * Specify by magnification: Enlarges the image at the specified magnification
+      * Specify the width after conversion: Enlarge the image to the specified width while maintaining the aspect ratio of the image (unit is pixels)
+      * Specify the height after conversion: Enlarge the image to the specified height while maintaining the aspect ratio of the image (in pixels)
+      * Specify by vertical and horizontal width after conversion: Enlarge to the specified vertical and horizontal width. Specify as "1920x1080" (unit is pixel)
+    If the magnification is more than 2 times (when removing noise, do it only once), enlarge by 2 times until the specified magnification is exceeded, and if the magnification is not a power of 2, reduce it at the end Process. As a result, the result of the conversion may be a slender picture.
+
+### "model"
+    Specify the model to use.
+    The best model depends on the image to be converted, so we recommend you to try various models.
+      * 2D illustration (RGB model): 2D illustration model that converts all RGB of the image
+      * Photo / Anime (Photo model): Photo / Anime model
+      * 2D illustration (UpRGB model): A model that converts faster than 2D illustration (RGB model) with the same or better image quality. However, the amount of memory (VRAM) consumed is larger than that of the RGB model.
+      * Photo / Animation (UpPhoto model): A model that converts faster than or equal to the image quality of Photos / Anime (Photo model). However, since the amount of memory (VRAM) that is consumed is larger than the Photo model, adjust the division size if forced termination during conversion
+      * 2D illustration (Y model): 2D illustration model that converts only the brightness of the image
+      * 2D illustration (UpResNet10 model): A model that converts with higher image quality than 2D illustration (UpRGB model). Note that this model will produce different results if the split size is different
+      * 2D illustration (CUnet model): A model that can convert 2D illustrations with the highest image quality among the included models. Note that this model will produce different results if the split size is different
+
+### "Use TTA mode"
+    Specify whether to use TTA (Test-Time Augmentation) mode.
+    Using TTA mode, the conversion is 8 times slower, but the PSNR (one of the image evaluation indices) seems to increase by about 0.15.
+
+## Processing speed setting
+     A group of setting items that affect the processing speed of image conversion.
+
+### "Split size"
+    Specifies the width (in pixels) for processing by dividing internally.
+    How to determine the optimal value (the processing ends at the fastest) will be explained in the section "Division size".
+    The upper part delimited by "-------" is a divisor of the vertical and horizontal size of the input image,
+    The lower one is a general-purpose division size read from "crop_size_list.txt".
+    If the partition size is too large, be careful as the amount of required memory (or the amount of VRAM when using GPU) exceeds the memory available on the PC and the software will forcibly terminate.
+    When processing a large number of images of the same image size by specifying a folder, it is recommended to check the optimal division size before converting, as it will affect the processing speed accordingly.
+    However, be aware that changing the split size may change the output result depending on the model.
+    (In that case, use the default split size and adjust the batch size to increase the processing speed)
+
+### "Batch size"
+    Specify the size when processing inside collectively.
+    Larger batch sizes may increase processing speed.
+    Make sure that the amount of memory required as well as the partition size does not exceed the memory available on the PC.
+
+## Operation setting
+     This is a group of settings that summarizes operation settings that are unlikely to be changed.
+
+### "Automatic conversion start setting at file input"
+     Set whether to automatically start conversion when an input file is specified using the reference button or drag and drop.
+     The setting of this item has no effect if the input file is given to the exe as an argument.
+      * Do not start automatically: Does not start conversion automatically even if you enter the file
+      * Start after inputting one file: Conversion starts automatically after inputting one file
+      * Start after inputting a folder or multiple files: Automatically start conversion after inputting a folder or multiple files. Please convert a single image file only when adjusting the conversion settings.
+
+### "Processor used"
+    Specifies the processor that performs the conversion.
+      * CUDA (cuDNN if available): Performs conversion using CUDA (GPU) (if cuDNN is available, cuDNN is used)
+      * CPU: Perform conversion using only CPU
+
+### "Do not overwrite output files"
+     When this setting is ON, conversion is not performed if a file with the same name exists in the image writing destination.
+
+### "Startup settings with arguments"
+     Set the operation when an input file is given as an argument to the exe.
+      * Convert at startup: Start conversion automatically at startup
+      * Exit on success: Automatically exit if not failed at the end of conversion
+
+### “Use GPU No”
+     You can specify the device number to use when there are multiple GPUs. In CPU mode or when an invalid device number is specified, it is ignored.
+
+### "Fixed folder for input reference"
+     The folder displayed first when you press the input reference button is fixed to the folder set here.
+
+### "Fixed folder when viewing output"
+     Fix the output destination folder of the converted image to the folder set here.
+     Also, fix the folder displayed first when you click the output browse button to the folder set here.
+
+## Other
+     Other setting items.
+
+### "UI language"
+    Set the UI language.
+    At the first startup, the same language as the PC language setting is selected. (If it does not exist, it will be in English)
+
+### "cuDNN check"
+    You can check if cuDNN can be used by pressing the "cuDNN check" button.
+    If cuDNN cannot be used, the reason is displayed.
+
+Press the "Execute" button to start the conversion.
+If you want to cancel on the way, press "Cancel" button.
+However, there is a time lag until it actually stops.
+The progress bar indicates the degree of progress when changing multiple images.
+The estimated time remaining is displayed in the log, which is an estimate when processing multiple files with the same vertical and horizontal width.
+Therefore, it is not useful when the size of the file varies, and when the number of images to be processed is two or less, only "Unknown" is displayed.
+
+
+ Usage (CUI version)
 --------
 
-「waifu2x-caffe-cui.exe」はコマンドラインツールです。
-`コマンドプロンプト` を立ち上げ、次のようにコマンドを打ち込み、使用して下さい。
+"Waifu2x-caffe-cui.exe" is a command line tool.
+Start up `Command Prompt`, and enter the command as follows.
 
 
-以下のコマンドは、使い方を画面に出力します。
-```
+The following command prints usage information to the screen.
+`` `
 waifu2x-caffe-cui.exe --help
-```
+`` `
 
-以下のコマンドは、画像変換を実行するコマンドの例です。
-```
+The following command is an example of the command to execute image conversion.
+`` `
 waifu2x-caffe-cui.exe -i mywaifu.png -m noise_scale --scale_ratio 1.6 --noise_level 2
-```
-以上を実行すると、`mywaifu(noise_scale)(Level2)(x1.600000).png`に変換結果が保存されます。
+`` `
+If you execute the above, the conversion result will be saved to `mywaifu (noise_scale) (Level2) (x1.600000) .png`.
 
-コマンドリスト、各コマンドの詳細はコマンドラインオプション(共通)とコマンドラインオプション(CUI版)の項をお読みください。
+For details on the command list and each command, see the sections on Command Line Options (Common) and Command Line Options (CUI Version).
 
 
- コマンドラインオプション(共通)
+ Command line options (common)
 --------
 
-本ソフトでは、以下のオプションを指定することが出来ます。
-GUI版では入力ファイル以外のコマンドラインオプションを指定して起動した場合、現在オプションのファイル保存を行いません。
-また、GUI版では指定されなかったオプションは前回終了時のオプションが使用されます。
+In this software, the following options can be specified.
+In the GUI version, if the command line option other than the input file is started and specified, the option file is not saved currently.
+For options not specified in the GUI version, the options at the time of the previous termination are used.
 
-### -l <文字列>,  --input_extention_list <文字列>
-     input_fileがフォルダの場合の、フォルダ内の変換する画像の拡張子を指定します。
-     デフォルト値は`png:jpg:jpeg:tif:tiff:bmp:tga`です。
-     また、区切り文字は`:`です。
-     例. png:jpg:jpeg:tif:tiff:bmp:tga
+### -l <string>, --input_extention_list <string>
+     If input_file is a folder, specify the extension of the image to be converted in the folder.
+     The default value is `png: jpg: jpeg: tif: tiff: bmp: tga`.
+     The delimiter is `:`.
+     Example.png: jpg: jpeg: tif: tiff: bmp: tga
 
-### -e <文字列>,  --output_extention <文字列>
-     input_fileがフォルダの場合の、出力画像の拡張子を指定します。
-     デフォルト値は`png`です。
+### -e <string>, --output_extention <string>
+     Specify the extension of the output image when input_file is a folder.
+     The default value is `png`.
 
-### -m <noise|scale|noise_scale>,  --mode <noise|scale|noise_scale>
-     変換モードを指定します。指定しなかった場合は`noise_scale`が選択されます。
-      * noise : ノイズ除去を行います (正確には、ノイズ除去用のモデルを用いて画像変換を行います)
-      * scale : 拡大を行います (正確には、既存アルゴリズムで拡大した後に、拡大画像補完用のモデルを用いて画像変換を行います)
-      * noise_scale : ノイズ除去と拡大を行います (ノイズ除去を行った後に、引き続き拡大処理を行います)
-      * auto_scale : 拡大を行います。入力がJPEG画像の場合のみノイズ除去も行います
+### -m <noise | scale | noise_scale>, --mode <noise | scale | noise_scale>
+     Specify the conversion mode. If not specified, `noise_scale` will be selected.
+      * noise: Performs noise removal (accurately, performs image conversion using a model for noise removal)
+      * scale: scales up (more precisely, scales up with the existing algorithm, then converts the image using the model for complementing the scaled up image)
+      * noise_scale: Performs noise reduction and enlargement (after noise reduction, enlargement processing is continued)
+      * auto_scale: Scale up. Performs noise reduction only when the input is a JPEG image
 
-### -s <小数点付き数値>, --scale_ratio <小数点付き数値>
-     画像を何倍に拡大するかを指定します。デフォルト値は`2.0`ですが、2.0倍以外も指定できます。
-     scale_widthかscale_heightが指定された場合、そちらが優先されます。
-     2.0以外の数値を指定すると、次のような処理を行います。
-      * まず、指定された倍率を必要十分にカバーするように、2倍拡大を繰り返し行います。
-      * 2の累乗以外の数値が指定されている場合は、指定倍率になるように拡大した画像を縮小します。
+### -s <decimal number>, --scale_ratio <decimal number>
+     Specify how many times to enlarge the image. The default value is `2.0`, but you can specify anything other than 2.0.
+     If scale_width or scale_height is specified, that one has priority.
+     If a value other than 2.0 is specified, the following processing is performed.
+      * First, repeat the 2x magnification to cover the specified magnification as necessary and sufficient.
+      * If a value other than a power of 2 is specified, the image will be reduced to the specified magnification.
 
-### -w <整数>, --scale_width <整数>
-     画像の縦横比を維持したまま、指定された横幅になるように拡大します(単位はピクセル)。
-     scale_heightと同時に指定すると、指定された縦横幅になるように画像を拡大します。
+### -w <integer>, --scale_width <integer>
+     Enlarges the image to the specified width while maintaining the aspect ratio of the image (in pixels).
+     If specified at the same time as scale_height, the image will be enlarged to the specified height and width.
 
-### -h <整数>, --scale_height <整数>
-     画像の縦横比を維持したまま、指定された縦幅になるように拡大します(単位はピクセル)。
-     scale_widthと同時に指定すると、指定された縦横幅になるように画像を拡大します。
+### -h <integer>, --scale_height <integer>
+     Enlarges the image to the specified height while maintaining the image's aspect ratio (in pixels).
+     If specified at the same time as scale_width, the image will be enlarged to the specified height and width.
 
-### -n <0|1|2|3>, --noise_level <0|1|2|3>
-     ノイズ除去レベルを指定します。ノイズ除去用のモデルはレベル0～3のみ用意されているので、
-     0 か 1 か 2 か 3 を指定して下さい。
-     デフォルト値は`0`です。
+### -n <0 | 1 | 2 | 3>, --noise_level <0 | 1 | 2 | 3>
+     Specify the noise reduction level. Only noise levels 0 to 3 are available for noise reduction models.
+     Specify 0, 1, 2, or 3.
+     The default value is `0`.
 
-### -p <cpu|gpu|cudnn>, --process <cpu|gpu|cudnn>
-     処理に使うプロセッサーを指定します。デフォルト値は`gpu`です。
-      * cpu : CPUを使って変換を行います。
-      * gpu : CUDA(GPU)を使って変換を行います。Windows版でのみ、cuDNNが使えるならcuDNNを使います。
-      * cudnn : cuDNNを使って変換を行います。
+### -p <cpu | gpu | cudnn>, --process <cpu | gpu | cudnn>
+     Specify the processor to use for processing. The default value is `gpu`.
+      * cpu: Performs conversion using the CPU.
+      * gpu: Performs conversion using CUDA (GPU). If you can use cuDNN only on Windows version, use cuDNN.
+      * cudnn: Performs conversion using cuDNN.
 
-### -c <整数>, --crop_size <整数>
-     分割サイズを指定します。デフォルト値は`128`です。
+### -c <integer>, --crop_size <integer>
+     Specify the division size. The default value is `128`.
 
-### -q <整数>, --output_quality <整数>
-     変換後の画像の画質を設定します。デフォルト値は`-1`です
-     指定できる値と意味は「出力拡張子」で設定した形式により異なります。
-     -1の場合は、各画像形式のデフォルト値が使われます。
+### -q <integer>, --output_quality <integer>
+     Set the image quality of the converted image. Default value is `-1`
+     The specifiable values ​​and their meanings depend on the format set in "Output Extension".
+     If -1, the default value for each image format is used.
 
-### -d <整数>, --output_depth <整数>
-     変換後の画像の1チャンネルあたりのビット数を指定します。デフォルト値は`8`です。
-     指定できる値は「出力拡張子」で設定した形式により異なります。
+### -d <integer>, --output_depth <integer>
+     Specify the number of bits per channel of the converted image. The default value is `8`.
+     The value that can be specified depends on the format set in “Output extension”.
 
-### -b <整数>, --batch_size <整数>
-     mini-batchサイズを指定します。デフォルト値は`1`です。
-     mini-batchサイズは画像を「分割サイズ」で分割したブロックを同時に処理する数のことです。例えば`2`を指定した場合、2ブロックずつ変換していきます。
-     mini-batchサイズを大きくすると分割サイズを大きくするとの同様にGPUの使用率が高くなりますが、計測した感じだと分割サイズを大きくした方が効果が高いです。
-     (例えば分割サイズを`64`、mini-batchサイズを`4`にするより、分割サイズを`128`、mini-batchサイズを`1`にした方が処理が速く終わる)
+### -b <integer>, --batch_size <integer>
+     Specify mini-batch size. The default value is `1`.
+     The mini-batch size is the number of blocks that are processed at the same time by dividing the image by the "divided size". For example, if you specify `2`, it will convert two blocks at a time.
+     Increasing the mini-batch size will increase the GPU usage rate, just as increasing the split size, but if you measure it, increasing the split size is more effective.
+     (For example, it is faster to set the split size to `128` and the mini-batch size to` 1` than to set the split size to `64` and the mini-batch size to` 4`.)
 
-### --gpu <整数>
-     処理に使うGPUデバイス番号を指定します。デフォルト値は`0`です。
-     GPUデバイス番号は0から始まることに注意してください。
-     処理にGPUを使わない場合は無視されます。
-     また、存在しないGPUデバイス番号を指定した場合はデフォルトのGPUで実行されます。
+### --gpu <integer>
+     Specify the GPU device number to be used for processing. The default value is `0`.
+     Note that GPU device numbers start at 0.
+     It is ignored if you do not use the GPU for processing.
+     If a non-existent GPU device number is specified, it will be executed on the default GPU.
 
-### -t <0|1>, --tta <0|1>
-     `1`を指定するとTTAモードを使用します。デフォルト値は`0`です。
+### -t <0 | 1>, --tta <0 | 1>
+     Specify `1` to use TTA mode. The default value is `0`.
 
-### --,  --ignore_rest
-     このオプションが指定された後の全てのオプションを無視します。
-     スクリプト・バッチファイル用です。
+###-, --ignore_rest
+     Ignore all options after this option is specified.
+     For scripts and batch files.
 
 
- コマンドラインオプション(GUI版)
+ Command line options (GUI version)
 --------
 
-GUI版ではオプション指定に当てはまらなかった引数は入力ファイルとして認識されます。
-入力ファイルはファイル、フォルダ、複数、ファイルとフォルダ同時に指定できます。
+In the GUI version, arguments that do not apply to option specification are recognized as input files.
+Input files can be specified for files, folders, multiple files and folders at the same time.
 
-### -o <string>,  --output_folder <string>
-     変換された画像を保存するフォルダへのパスを設定します。
-     指定されたフォルダの中に変換後のファイルを保存します。
-     変換後のファイルの命名規則はGUIで入力ファイルを設定した時に自動で決定される出力ファイル名と同じです。
-     指定されなかった場合、ひとつ目の入力ファイルと同じフォルダに保存されます。
+### -o <string>, --output_folder <string>
+     Set the path to the folder where you want to save the converted image.
+     Save the converted file in the specified folder.
+     The naming rule of the converted file is the same as the output file name that is automatically determined when setting the input file in the GUI.
+     If not specified, it will be saved in the same folder as the first input file.
 
-### --auto_start <0|1>
-     `1`を指定すると起動時に自動で変換を開始します。
+### --auto_start <0 | 1>
+     If you specify `1`, conversion starts automatically at startup.
 
-### --auto_exit <0|1>
-     `1`を指定すると、起動時に自動で変換した場合に変換が成功すると自動で終了します。
+### --auto_exit <0 | 1>
+     If `1` is specified, if the conversion is successful at the time of startup and the conversion is successful, it will end automatically.
 
-### --no_overwrite <0|1>
-     `1`を指定すると、画像の書き込み先に同名のファイルが存在する場合は変換を行いません。
+### --no_overwrite <0 | 1>
+     If `1` is specified, conversion will not be performed if a file with the same name exists in the image writing destination.
 
-### -y <upconv_7_anime_style_art_rgb|upconv_7_photo|anime_style_art_rgb|photo|anime_style_art_y|upresnet10|cunet>,  --model_type <upconv_7_anime_style_art_rgb|upconv_7_photo|anime_style_art_rgb|photo|anime_style_art_y|upresnet10|cunet>
-     使用するモデルを指定します。
-     GUIでの設定項目「モデル」と以下のように対応しています。
-      * upconv_7_anime_style_art_rgb : 2次元イラスト(UpRGBモデル)
-      * upconv_7_photo : 写真・アニメ(UpPhotoモデル)
-      * anime_style_art_rgb : 2次元イラスト(RGBモデル)
-      * photo : 写真・アニメ(Photoモデル)
-      * anime_style_art_y : 2次元イラスト(Yモデル)
-      * upresnet10 : 2次元イラスト(UpResNet10モデル)
-      * cunet : 2次元イラスト(CUnetモデル)
+### -y <upconv_7_anime_style_art_rgb | upconv_7_photo | anime_style_art_rgb | photo | anime_style_art_y | upresnet10 | cunet>, --model_type <upconv_7_anime_style_art_rgb | upconv_7_photo | anime_style_art_rgb | photo | style |
+     Specify the model to use.
+     Corresponds to the setting item "Model" in the GUI as follows.
+      * upconv_7_anime_style_art_rgb: 2D illustration (UpRGB model)
+      * upconv_7_photo: Photo / Animation (UpPhoto model)
+      * anime_style_art_rgb: 2D illustration (RGB model)
+      * photo: Photo / Anime (Photo model)
+      * anime_style_art_y: 2D illustration (Y model)
+      * upresnet10: 2D illustration (UpResNet10 model)
+      * cunet: 2D illustration (CUnet model)
 
 
- コマンドラインオプション(CUI版)
+ Command line option (CUI version)
 --------
 
 ### --version
-     バージョン情報を出力し、終了します。
+     Output version information and exit.
 
-### -?,  --help
-     使い方を表示し、終了します。
-     手軽に使い方を確認したい時などにどうぞ。
+###-?, --help
+     Show usage and exit.
+     Please when you want to easily check how to use.
 
-### -i <文字列>,  --input_file <文字列>
-     (必須)  変換する画像へのパス
-     フォルダを指定した場合、そのフォルダ以下の画像ファイルを全て変換してoutput_fileで指定したフォルダへ出力します。
+### -i <string>, --input_file <string>
+     (Required) Path to the image to convert
+     If a folder is specified, all image files under that folder are converted and output to the folder specified by output_file.
 
-### -o <string>,  --output_file <string>
-     変換された画像を保存するファイルへのパス
-     (input_fileがフォルダの場合)変換された画像を保存するフォルダへのパス
-     (input_fileが画像ファイルの場合)拡張子(最後の.pngなど)は必ず入力するようにして下さい。
-     指定しなかった場合は自動でファイル名を決定し、そのファイルに保存します。
-     ファイル名の決定ルールは、
-     `[元の画像ファイル名]``(モデル名)``(モード名)``(ノイズ除去レベル(ノイズ除去モードの場合))``(拡大率(拡大モードの場合))``(出力ビット数(8ビット以外の場合))``.出力拡張子`
-     のようになっています。
-     保存される場所は、基本的には入力画像と同じディレクトリになります。
+### -o <string>, --output_file <string>
+     Path to file to save converted image
+     (if input_file is a folder) Path to folder to save converted image
+     (When input_file is an image file) Be sure to enter the extension (such as the last .png).
+     If not specified, the file name is determined automatically and saved in that file.
+     The rule for determining the file name is
+     `[Original image file name]` `(model name) '' (mode name)` `(noise removal level (in noise removal mode))` `(enlargement ratio (in enlargement mode))` `(output Number of bits (other than 8 bits)) `` .output extension`
+     It is like.
+     The save location is basically the same directory as the input image.
 
-### --model_dir <文字列>
-     モデルが格納されているディレクトリへのパスを指定します。デフォルト値は`models/cunet`です。
-     標準では以下のモデルが付属しています。
-      * `models/anime_style_art_rgb` : 2次元イラスト(RGBモデル)
-      * `models/anime_style_art` : 2次元イラスト(Yモデル)
-      * `models/photo` : 写真・アニメ(Photoモデル)
-      * `models/upconv_7_anime_style_art_rgb` : 2次元イラスト(UpRGBモデル)
-      * `models/upconv_7_photo` : 写真・アニメ(UpPhotoモデル)
-      * `models/upresnet10` : 2次元イラスト(UpResNet10モデル)
-      * `models/cunet` : 2次元イラスト(CUnetモデル)
-      * `models/ukbench` : 旧式の写真用モデル(拡大するモデルのみ付属しています。ノイズ除去は出来ません)
-     基本的には指定しなくても大丈夫です。デフォルト以外のモデルや自作のモデルを使用する時などに指定して下さい。
+### --model_dir <string>
+     Specify the path to the directory where the model is stored. The default value is `models / cunet`.
+     The following models are attached as standard.
+      * `models / anime_style_art_rgb`: 2D illustration (RGB model)
+      * `models / anime_style_art`: 2D illustration (Y model)
+      * `models / photo`: Photo / Anime (Photo model)
+      * `models / upconv_7_anime_style_art_rgb`: 2D illustration (UpRGB model)
+      * `models / upconv_7_photo`: Photo / Animation (UpPhoto model)
+      * `models / upresnet10`: 2D illustration (UpResNet10 model)
+      * `models / cunet`: 2D illustration (CUnet model)
+      * `models / ukbench`: Old-fashioned photographic model (only the enlarged model is included; noise cannot be removed)
+     Basically, it is not necessary to specify. Specify this when using a model other than the default or your own model.
 
-### --crop_w <整数>
-     分割サイズ(横幅)を指定します。設定しなかった場合はcrop_sizeの値が使用されます。
-     入力する画像の横幅の約数を指定するとより高速に変換できる可能性があります。
+### --crop_w <integer>
+     Specify the division size (width). If not set, the value of crop_size is used.
+     If you specify a divisor of the width of the input image, conversion may be faster.
 
-### --crop_h <整数>
-     分割サイズ(縦幅)を指定します。設定しなかった場合はcrop_sizeの値が使用されます。
-     入力する画像の縦幅の約数を指定するとより高速に変換できま可能性があります。
+### --crop_h <integer>
+     Specify the division size (vertical width). If not set, the value of crop_size is used.
+     If you specify a divisor of the vertical width of the input image, conversion may be faster.
 
 
- 分割サイズ
+ Division size
 --------
 
-waifu2x-caffe(waifu2xもですが)は画像を変換する時、
-画像を一定のサイズ毎に分割して一つずつ変換を行い、最後に結合して一枚の画像に戻す、という処理をしています。
-分割サイズ(crop_size)とは、この画像を分割する際の幅（ピクセル単位）の事です。
+When converting images, waifu2x-caffe (although waifu2x also)
+The process of dividing the image by a certain size, converting it one by one, and finally combining and returning to one image.
+The division size (crop_size) is the width (in pixels) when dividing this image.
 
-CUDAで変換中でもGPUを使い切れていない（GPUの使用率が100%近くまでいっていない）場合、
-この数値を大きくすることで処理が早く終わる可能性があります。（GPUを使い切ることが出来る様になるため）
-[GPU-Z](http://www.techpowerup.com/gpuz/)などでGPU Load(GPU使用率)とMemory Used(VRAM使用率)を見ながら調節してみて下さい。
-また、以下の様な特性があるので参考にして下さい。
+If the GPU is not used up during conversion with CUDA (GPU usage rate is not close to 100%),
+Increasing this number may result in faster processing. (Because the GPU can be used up)
+[GPU-Z] (http://www.techpowerup.com/gpuz/) Please adjust while checking GPU Load (GPU usage rate) and Memory Used (VRAM usage rate).
+Also, please refer to the following characteristics.
 
- * 必ずしも数値が大きければ大きいほど速くなるわけでは無い
- * 分割サイズが画像の縦横サイズの約数（あるいは割ったときに余りが少ない数）だと、無駄に演算する量が減って速くなる。 (この条件にあまり当てはまらない数値が最速になるケースもあるらしい？)
- * 数値を2倍にした場合、理論上は使用するメモリ量は4倍になる(実際は3～4倍といったところ)のでソフトが落ちないように注意。特にCUDAはcuDNNに比べてメモリの消費量がとても多いので気をつけること
+ * Higher numbers do not necessarily mean faster
+ * If the division size is a divisor of the vertical and horizontal size of the image (or a number that has a small remainder when divided), the amount of wasteful calculation is reduced and the speed is increased. (It seems that there is a case where the numerical value that does not apply to this condition is fastest?)
+ * If you double the number, theoretically the memory used will be quadrupled (actually 3-4 times), so be careful not to lose the software. In particular, be aware that CUDA consumes much more memory than cuDNN
 
 
- アルファチャンネル付き画像について
+ About images with alpha channel
 --------
 
-本ソフトではアルファチャンネル付き画像の拡大も対応しています。
-しかし、アルファチャンネルを単体で拡大する処理になっているため、アルファチャンネル付き画像の拡大は無い場合と比べておよそ2倍の時間がかかるので注意してください。
-ただし、アルファチャンネルが単色で構成されている場合はなしの場合とほぼ同じ時間で拡大できます。
+This software supports enlargement of images with alpha channel.
+However, please note that it takes about twice as long to enlarge the image with alpha channel because it is the process to enlarge the alpha channel by itself.
+However, if the alpha channel is composed of a single color, it can be expanded in almost the same time as without.
 
 
  The format of language files
 --------
 
 Language files format is JSON.
-If you create new language file, add language setting to 'lang/LangList.txt'.
-'lang/LangList.txt' format is TSV(Tab-Separated Values).
+If you create new language file, add language setting to 'lang / LangList.txt'.
+'lang / LangList.txt' format is TSV (Tab-Separated Values).
 
-  * LangName : Language name
-  * LangID : Primary language [See MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/dd318693.aspx)
-  * SubLangID : Sublanguage [See MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/dd318693.aspx)
-  * FileName : Language file name
+  * LangName: Language name
+  * LangID: Primary language [See MSDN] (https://msdn.microsoft.com/en-us/library/windows/desktop/dd318693.aspx)
+  * SubLangID: Sublanguage [See MSDN] (https://msdn.microsoft.com/en-us/library/windows/desktop/dd318693.aspx)
+  * FileName: Language file name
 
 ex.
 
-  * Japanese  LangID : 0x11(LANG_JAPANESE), SubLangID : 0x01(SUBLANG_JAPANESE_JAPAN)
-  * English(US) LangID : 0x09(LANG_ENGLISH), SubLangID : 0x01(SUBLANG_ENGLISH_US)
-  * English(UK) LangID : 0x09(LANG_ENGLISH), SubLangID : 0x02(SUBLANG_ENGLISH_UK)
+  * Japanese LangID: 0x11 (LANG_JAPANESE), SubLangID: 0x01 (SUBLANG_JAPANESE_JAPAN)
+  * English (US) LangID: 0x09 (LANG_ENGLISH), SubLangID: 0x01 (SUBLANG_ENGLISH_US)
+  * English (UK) LangID: 0x09 (LANG_ENGLISH), SubLangID: 0x02 (SUBLANG_ENGLISH_UK)
 
 
-おことわり
+Acknowledgment
 ------------
 
-本ソフトは無保証です。
-利用者の判断の下に使用して下さい。
-制作者はいかなる義務も負わないものとします。
+This software is not guaranteed.
+Use it at your discretion.
+The author has no obligation.
 
 
-謝辞
+Acknowledgments
 ------
-オリジナルの[waifu2x](https://github.com/nagadomi/waifu2x)、及びモデルの制作を行い、MITライセンスの下で公開して下さった [ultraist](https://twitter.com/ultraistter)さん、  
+Produced the original [waifu2x] (https://github.com/nagadomi/waifu2x) and a model and released it under the MIT license [ultraist] (https://twitter.com/ultraistter) ,
 オリジナルのwaifu2xを元に[waifu2x-converter](https://github.com/WL-Amigo/waifu2x-converter-cpp)を作成して下さった [アミーゴ](https://twitter.com/WL_Amigo)さん(READMEやLICENSE.txtの書き方、OpenCVの使い方等かなり参考にさせていただきました)  
 [waifu2x-chainer](https://github.com/tsurumeso/waifu2x-chainer)を作成してオリジナルのモデルの制作を行い、MITライセンスの下で公開して下さった[tsurumeso](https://github.com/tsurumeso)さん  
 に、感謝します。  
